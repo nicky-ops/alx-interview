@@ -5,7 +5,7 @@ Implementing the N queens puzzle
 import sys
 
 
-def solveNQueens():
+def main():
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
@@ -17,36 +17,30 @@ def solveNQueens():
     if int(N) < 4:
         print("N must be at least 4")
         sys.exit(1)
-    col = set()
-    posDiag = set()
-    negDiag = set()
 
-    res = []
-    board = [["."] * N for i in range(N)]
+    solutions = []
+    solve_nqueens(N, [], solutions)
 
-    def backtrack(r: int):
-        if r == N:
-            copy = ["".join(row) for row in board]
-            res.append(copy)
-            return
+    for solution in solutions:
+        print(solution)
 
-        for c in range(N):
-            if c in col or (r + c) in posDiag or (r-c) in negDiag:
-                continue
 
-            col.add(c)
-            posDiag.add(r + c)
-            negDiag.add(r - c)
-            board[r][c] = "Q"
+def solve_nqueens(N, board, solutions):
+    row = len(board)
+    if row == N:
+        solutions.append(board)
+        return
+    for col in range(N):
+        if is_valid_move(board, row, col):
+            solve_nqueens(N, board + [[row, col]], solutions)
 
-            backtrack(r + 1)
 
-            col.remove(c)
-            posDiag.remove(r + c)
-            negDiag.remove(r - c)
-            board[r][c] = "."
+def is_valid_move(board, row, col):
+    for r, c in board:
+        if c == col or r - c == row - col or r + c == row + col:
+            return False
+    return True
 
-    backtrack(0)
-    print(res)
 
-solveNQueens()
+if __name__ == "__main__":
+    main()
